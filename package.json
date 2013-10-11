@@ -1,0 +1,9 @@
+
+{
+   "name": "Attaché",
+   "description": "A library for tooltips and palette UI elements",
+   "version": "0.0.1",
+   "devDependencies": {
+    "grunt": "~0.4.1"
+  }
+ }
