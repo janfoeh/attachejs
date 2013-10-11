@@ -9,6 +9,14 @@ module.exports = function(grunt) {
     appConfig: attache,
     pkg: grunt.file.readJSON('package.json'),
     clean: ['<%= appConfig.buildDir %>'],
+    jsdoc : {
+        dist : {
+            src: ['src/*.js', 'test/*.js'], 
+            options: {
+                destination: 'doc'
+            }
+        }
+    }
     // copy: {
     //   // NOTE: copy MUST have a target - just using copy: { files: ... } yields an 'missing indexOf' error
     //   build: {
@@ -28,9 +36,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
-  // grunt.registerTask('build', [
-  //   'clean',
-  //   'uglify'
-  // ]);
+  grunt.registerTask('default', [
+    'jsdoc'
+  ]);
 };

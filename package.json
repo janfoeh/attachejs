@@ -1,9 +1,11 @@
-
 {
-   "name": "Attaché",
-   "description": "A library for tooltips and palette UI elements",
-   "version": "0.0.1",
-   "devDependencies": {
-    "grunt": "~0.4.1"
+  "name": "Attache",
+  "description": "A library for tooltips and palette UI elements",
+  "version": "0.0.1",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-jsdoc": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.4"
   }
- }
+}
