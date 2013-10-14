@@ -6,7 +6,7 @@
   if (typeof define === 'function' && define.amd) {
     define(['jquery'], factory);
   } else {
-    factory(jQuery);
+    window.Attache = factory(jQuery);
   }
 
 }(function ($) {
@@ -20,18 +20,17 @@
    */
 
   function Attache(anchorElement, options) {
-      var noop      = function () {},
-          that      = this,
-          defaults  = {
-            trigger: "hover",
-            
-          };
+    var noop      = function () {},
+        that      = this,
+        defaults  = {
+          trigger: "hover"
+        };
 
-      this.options = $.extend({}, defaults, options);
+    this.options = $.extend({}, defaults, options);
 
-      this.$anchorElement = $(anchorElement);
+    this.$anchorElement = $(anchorElement);
 
-      this.initialize();
+    this.initialize();
   }
 
   Attache.prototype = (function() {
@@ -46,4 +45,6 @@
       show: show
     };
   })();
+
+  return Attache;
 }));
