@@ -1,23 +1,58 @@
-describe("Attache", function() {
+/*global Attache, describe, xdescribe, it, xit, beforeEach, afterEach, expect, runs, waitsFor, spyOn, spyOnEvent */
 
-  it("should do something", function() {
-    expect(true).toBe(true);
+describe("Attache", function() {
+  "use strict";
+
+  var $anchor,
+      attache;
+
+  beforeEach(function() {
+    $anchor = $('<div></div>').css({position: 'absolute', left: 200, top: 200, width: 100, height: 100}).appendTo('body');
+  });
+
+  afterEach(function() {
+    $anchor.remove();
+    attache.destroy();
+  });
+
+  it("should be lazy and not create markup on initialization", function() {
+    attache = new Attache($anchor.get(0));
+
+    expect($('.attache-popover').length).toEqual(0);
+  });
+
+  it("should create popover markup on show()", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+
+    expect($('.attache-popover').length).toEqual(1);
+  });
+
+  it("should remove the popover from DOM when destroyed", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+    attache.destroy();
+
+    expect($('.attache-popover').length).toEqual(0);
+  });
+
+  describe("options", function() {
+    it("should apply a provided CSS class to the popover", function() {
+      attache = new Attache($anchor.get(0), { popoverClass: 'additional-class-test' });
+      attache.show();
+
+      expect(attache.popover().hasClass('additional-class-test')).toBeTruthy();
+    });
   });
 
   describe("when positioned", function() {
-    var $anchor,
-        attache;
 
     beforeEach(function() {
-      $anchor = $('<div></div>').css({position: 'absolute', left: 200, top: 200, width: 100, height: 100}).appendTo('body');
       attache = new Attache($anchor.get(0), { popoverClass: 'popover-positiontest'});
       attache.show();
-
-      window.attache = attache
     });
 
     afterEach(function() {
-      $anchor.remove();
       attache.destroy();
     });
 

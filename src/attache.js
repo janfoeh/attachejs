@@ -22,6 +22,8 @@
    *                                                                      to the popover being off-screen
    * @param {Number} [options.offsetX=10] - the horizontal distance between anchor and popover in px
    * @param {Number} [options.offsetY=10] - the vertical distance between anchor and popover in px
+   * @param {String} [options.popoverClass] - additional CSS class(es) to apply to the popover markup
+   * @param {Boolean} [options.debug=false] - provide debug information an error handling in the console
    */
 
   function Attache(anchorElement, options) {
@@ -40,14 +42,15 @@
 
   Attache.prototype = (function() {
 
-    var _status = "inactive",
-        defaults,
+    var defaults,
         initialize,
         show,
         popover,
         setContent,
         positionPopover,
         destroy,
+        exists,
+        isActive,
         _createPopover,
         _getAnchorPosition,
         _setPopoverPosition,
@@ -76,7 +79,7 @@
     };
 
     show = function show() {
-      if (typeof this.$popover === 'undefined' || this.$popover.length !== 1) {
+      if ( !this.exists() ) {
         _createPopover.call(this);
       }
 
@@ -89,8 +92,6 @@
       this.$popover.addClass('active');
 
       this.positionPopover();
-
-      _status = "active";
     };
 
     _createPopover = function _createPopover() {
@@ -240,11 +241,33 @@
       return this.$popover;
     };
 
+    /**
+     * Does the popover markup exist in the DOM?
+     *
+     * @returns {Boolean}
+     */
+    exists = function exists() {
+      return typeof this.$popover !== 'undefined' && this.$popover.length === 1;
+    };
+
+    /**
+     * Is this popover currently active?
+     *
+     * @returns {Boolean}
+     */
+    isActive = function isActive() {
+      return this.exists() && this.$popover.hasClass('active');
+    };
+
     setContent = function setContent(content) {
       this.content = content;
     };
 
     destroy = function destroy() {
+      if ( !this.exists() ) {
+        return false;
+      }
+
       this.$popover.remove();
     };
 
@@ -253,6 +276,8 @@
       initialize: initialize,
       show: show,
       popover: popover,
+      exists: exists,
+      isActive: isActive,
       setContent: setContent,
       positionPopover: positionPopover,
       destroy: destroy
