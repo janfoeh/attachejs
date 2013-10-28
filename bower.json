@@ -1,0 +1,29 @@
+{
+  "name": "attachejs",
+  "version": "0.1.0",
+  "homepage": "https://github.com/janfoeh/attachejs",
+  "authors": [
+    "Jan-Christian Foeh <jan@programmanstalt.de>"
+  ],
+  "description": "Attaché is a JS library for tooltips and palette UI elements",
+  "main": [
+    "src/attache.js",
+    "src/attache-jquery.js",
+    "dist/attache.css"
+  ],
+  "keywords": [
+    "tooltip",
+    "popover",
+    "palette"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "doc",
+    "css"
+  ]
+}
