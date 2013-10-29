@@ -7,9 +7,9 @@
   ],
   "description": "Attaché is a JS library for tooltips and palette UI elements",
   "main": [
-    "src/attache.js",
-    "src/attache-jquery.js",
-    "dist/attache.css"
+    "attache.js",
+    "attache-jquery.js",
+    "attache.css"
   ],
   "keywords": [
     "tooltip",
@@ -27,6 +27,6 @@
     "test",
     "tests",
     "doc",
-    "css"
+    "sass"
   ]
 }

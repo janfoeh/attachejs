@@ -8,10 +8,9 @@ module.exports = function(grunt) {
   grunt.initConfig({
     appConfig: attache,
     pkg: grunt.file.readJSON('package.json'),
-    clean: ['<%= appConfig.buildDir %>'],
     jsdoc : {
         dist : {
-            src: ['src/*.js', 'test/*.js'],
+            src: ['attache.js', 'attache-jquery.js'],
             options: {
                 destination: 'doc'
             }
