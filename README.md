@@ -6,7 +6,21 @@ it is not meant to be one of the many [full-featured drop-in libraries](http://w
 
 Instead, the project is focused on being compact, easily understandable and extendable, fast and well-tested.
 
-Please note
-===========
+**Please note that this project is still a very early work in progress. It is not yet meant for public consumption.**
 
-This project is still a very early work in progress. It is not meant for public consumption yet.
+Usage
+-----
+
+Include the base script:
+
+    <script type="text/javascript" src="attache.js"></script>
+
+If you wish to use Attaché as a jQuery plugin, include the adapter as well:
+    
+    <script type="text/javascript" src="attache-jquery.js"></script>
+
+Include the limited base styles, or copy them into your own stylesheets:
+
+    <link rel="stylesheet" type="text/css" href="attache.css">
+
+See the [class documentation](doc/Attache.html) for options and examples.
