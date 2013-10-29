@@ -54,6 +54,7 @@
     var defaults,
         initialize,
         show,
+        hide,
         popover,
         setContent,
         positionPopover,
@@ -107,6 +108,16 @@
       this.$popover.addClass('active');
 
       this.positionPopover();
+    };
+
+    hide = function hide() {
+      // trigger a style recalculation in order to prevent the browser
+      // from coalescing the style changes from removing 'active' and
+      // adding 'inactive'. Coalescing the changes makes exit animations
+      // impossible, since the popover changes display from 'block' to 'none'
+      this.$popover.removeClass('active');
+      this.$popover.get(0).offsetHeight;
+      this.$popover.addClass('inactive');
     };
 
     /**
@@ -353,6 +364,7 @@
       defaults: defaults,
       initialize: initialize,
       show: show,
+      hide: hide,
       popover: popover,
       exists: exists,
       isActive: isActive,

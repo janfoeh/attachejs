@@ -28,6 +28,33 @@ describe("Attache", function() {
     expect($('.attache-popover').length).toEqual(1);
   });
 
+  it("should mark popover as active on show()", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+
+    expect($('.attache-popover').hasClass('inactive')).toBeFalsy();
+    expect($('.attache-popover').hasClass('active')).toBeTruthy();
+  });
+
+  it("should mark popover as inactive on hide()", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+
+    attache.hide();
+
+    expect($('.attache-popover').hasClass('active')).toBeFalsy();
+    expect($('.attache-popover').hasClass('inactive')).toBeTruthy();
+  });
+
+  it("should not remove popover markup on hide()", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+
+    attache.hide();
+
+    expect($('.attache-popover').length).toEqual(1);
+  });
+
   it("should remove the popover from DOM when destroyed", function() {
     attache = new Attache($anchor.get(0));
     attache.show();
