@@ -201,8 +201,13 @@
     };
 
     _setPositionLabel = function _setPositionLabel(newPositionLabel) {
-      this.$popover.removeClass( this.currentPositionLabel.replace(' ', '-') )
-                    .addClass( newPositionLabel.replace(' ', '-') );
+      var oldHorizontalLabel  = "horizontal-" + this.currentPositionLabel.split(' ')[0],
+          oldVerticalLabel    = "vertical-" + this.currentPositionLabel.split(' ')[1],
+          newHorizontalLabel  = "horizontal-" + newPositionLabel.split(' ')[0],
+          newVerticalLabel    = "vertical-" + newPositionLabel.split(' ')[1];
+
+      this.$popover.removeClass( oldHorizontalLabel + " " + oldVerticalLabel )
+                    .addClass( newHorizontalLabel + " " + newVerticalLabel );
 
       this.currentPositionLabel = newPositionLabel;
     };
