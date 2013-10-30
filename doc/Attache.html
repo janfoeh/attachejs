@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="Attache"><span class="type-signature"></span>new Attache<span class="signature">(anchorElement, <span class="optional">options</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Attache"><span class="type-signature"></span>new Attache<span class="signature">(anchorElement, <span class="optional">options</span>, <span class="optional">callbacks</span>)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -281,7 +281,7 @@
             
             
             <td class="description last">an array list of alternative position strings, in case the default position leads
-                                                                     to the popover being off-screen</td>
+                                                                 to the popover being off-screen</td>
         </tr>
 	
 	
@@ -445,6 +445,99 @@
         </tr>
 	
 	
+	
+        <tr>
+            
+                <td class="name"><code>callbacks</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">callbacks to be triggered at various lifecycle moments
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>afterShow</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#afterShowCallback">afterShowCallback</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">called each time after the popover is shown</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+            </td>
+        </tr>
+	
+	
 	</tbody>
 </table>
     
@@ -472,7 +565,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line38">line 38</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line41">line 41</a>
     </li></ul></dd>
     
     
@@ -527,7 +620,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
         <dl>
             
 <dt>
-    <h4 class="name" id="_createPopover"><span class="type-signature">&lt;private, static> </span>_createPopover<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addCallback"><span class="type-signature">&lt;static> </span>addCallback<span class="signature">(trigger, callback)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -535,382 +628,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     
     <div class="description">
-        Create the popover markup in the DOM
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line118">line 118</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="_debug"><span class="type-signature">&lt;private, static> </span>_debug<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Write a debug message to console if debugging is enabled
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Argument</th>
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">mixed</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                    &lt;repeatable><br>
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">all arguments are handed to console.log</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line285">line 285</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="_getAnchorPosition"><span class="type-signature">&lt;private, static> </span>_getAnchorPosition<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        The top left and bottom right coordinates of the anchor element. Relative to the document, ignores element margin.
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line187">line 187</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - {
-                     topleft:      { x: x, y: y},
-                     bottomright:  { x: x, y: y}
-                   }
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="_popoverIsWithinViewport"><span class="type-signature">&lt;private, static> </span>_popoverIsWithinViewport<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        checks whether the popover is currently completely visible within the viewport
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line267">line 267</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="_setPopoverPosition"><span class="type-signature">&lt;private, static> </span>_setPopoverPosition<span class="signature">(positionLabel)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Calculate the popovers' desired offset and set it
+        Add a callback that is executed at trigger
     </div>
     
 
@@ -944,7 +662,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
 	
         <tr>
             
-                <td class="name"><code>positionLabel</code></td>
+                <td class="name"><code>trigger</code></td>
             
             
             <td class="type">
@@ -960,7 +678,30 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
             
             
             
-            <td class="description last">Where to position the popover. One of either "{left|center|right} {top|center|bottom}", e.g. "right bottom"</td>
+            <td class="description last">at what point in the lifecycle to trigger the callback</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
         </tr>
 	
 	
@@ -991,7 +732,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line212">line 212</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line390">line 390</a>
     </li></ul></dd>
     
     
@@ -1060,7 +801,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line341">line 341</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line374">line 374</a>
     </li></ul></dd>
     
     
@@ -1129,7 +870,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line309">line 309</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line342">line 342</a>
     </li></ul></dd>
     
     
@@ -1216,7 +957,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line320">line 320</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line353">line 353</a>
     </li></ul></dd>
     
     
@@ -1303,7 +1044,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line298">line 298</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line331">line 331</a>
     </li></ul></dd>
     
     
@@ -1438,7 +1179,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line133">line 133</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line166">line 166</a>
     </li></ul></dd>
     
     
@@ -1460,6 +1201,11 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     
     
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>popover.positionPopover('left top');</code></pre>
+
     
 </dd>
 
@@ -1555,7 +1301,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line331">line 331</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line364">line 364</a>
     </li></ul></dd>
     
     
@@ -1624,7 +1370,7 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line96">line 96</a>
+        <a href="attache.js.html">attache.js</a>, <a href="attache.js.html#line114">line 114</a>
     </li></ul></dd>
     
     
@@ -1665,13 +1411,13 @@ var popover = new Attache($('#popover-link'), {position: 'right bottom', alterna
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Attache.html">Attache</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Attache.html">Attache</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Oct 23 2013 15:51:43 GMT+0200 (MESZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Oct 29 2013 22:57:53 GMT+0100 (MEZ)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -21,11 +21,14 @@
    * @param {String} [options.trigger=hover] - An event type to trigger Attaché. Allowed are "hover", "click" or "none"
    * @param {String} [options.position=right center] - the popover position, relative to the anchor: left|center|right top|center|bottom
    * @param {String[]} [options.alternativePositions=center bottom] - an array list of alternative position strings, in case the default position leads
-   *                                                                      to the popover being off-screen
+   *                                                                  to the popover being off-screen
    * @param {Number} [options.offsetX=10] - the horizontal distance between anchor and popover in px
    * @param {Number} [options.offsetY=10] - the vertical distance between anchor and popover in px
    * @param {String} [options.popoverClass] - additional CSS class(es) to apply to the popover markup
    * @param {Boolean} [options.debug=false] - provide debug information and error handling in the console
+   *
+   * @param {Object} [callbacks] - callbacks to be triggered at various lifecycle moments
+   * @param {afterShowCallback} [callbacks.afterShow] - called each time after the popover is shown
    * 
    * @example
    * var popover = new Attache(document.getElementById('popover-link'), {popoverClass: 'info-tooltip'});
@@ -35,7 +38,7 @@
    * // or 'left center' if the tooltip cannot fit at bottom right
    * var popover = new Attache($('#popover-link'), {position: 'right bottom', alternativePositions: ['right center', 'left center']});
    */
-  function Attache(anchorElement, options) {
+  function Attache(anchorElement, options, callbacks) {
     var noop = function () {},
         that = this;
 
@@ -45,6 +48,17 @@
     this.$popover;
     this.currentPositionLabel = this.options.position;
     this.content;
+    this.callbacks = {
+      'afterShow': []
+    };
+
+    if (typeof callbacks !== 'undefined') {
+      for(var callbackName in callbacks){
+         if (callbacks.hasOwnProperty(callbackName)) {
+           this.addCallback(callbackName, callbacks[callbackName]);
+         }
+      }
+    }
 
     this.initialize();
   }
@@ -61,6 +75,9 @@
         destroy,
         exists,
         isActive,
+        addCallback,
+        _hasCallbackFor,
+        _executeCallbacksFor,
         _createPopover,
         _getAnchorPosition,
         _setPopoverPosition,
@@ -108,6 +125,8 @@
       this.$popover.addClass('active');
 
       this.positionPopover();
+
+      _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
     };
 
     hide = function hide() {
@@ -360,6 +379,55 @@
       this.$popover.remove();
     };
 
+    /**
+     * Add a callback that is executed at trigger
+     *
+     * @memberOf Attache
+     * @public
+     * @param {String} trigger - at what point in the lifecycle to trigger the callback
+     * @param {Function} callback
+     */
+    addCallback = function addCallback(trigger, callback) {
+      if (typeof this.callbacks[trigger] === 'undefined') {
+         _debug.call(this, "Warning: unknown callback %s will never be triggered", trigger);
+         return false;
+      }
+
+      this.callbacks[trigger].push(callback);
+    };
+
+    /**
+     * Tests whether one or more callbacks are available for the given trigger
+     *
+     * @memberOf Attache
+     * @private
+     * @param {String} trigger
+     * @returns {Boolean}
+     */
+    _hasCallbackFor = function _hasCallbackFor(trigger) {
+      return typeof this.callbacks[trigger] !== 'undefined' && this.callbacks[trigger].length > 0;
+    };
+
+    /**
+     * Execute all callbacks for a given trigger
+     *
+     * @memberOf Attache
+     * @private
+     * @param {String} trigger
+     * @param {...mixed} arguments - arguments to be handed to the callbacks
+     */
+    _executeCallbacksFor = function _executeCallbacksFor(trigger) {
+      var that              = this,
+          callbackArguments = Array.prototype.slice.call(arguments);
+
+      // remove the trigger name
+      callbackArguments.shift();
+
+      if (_hasCallbackFor.call(this, trigger)) {
+        this.callbacks[trigger].forEach(function(cb) { cb.apply(that, callbackArguments); });
+      }
+    };
+
     return {
       defaults: defaults,
       initialize: initialize,
@@ -370,9 +438,20 @@
       isActive: isActive,
       setContent: setContent,
       positionPopover: positionPopover,
-      destroy: destroy
+      destroy: destroy,
+      addCallback: addCallback
     };
   })();
 
   return Attache;
 }));
+
+/**
+ * Callback called after a popover has been displayed
+ *
+ * @callback afterShowCallback
+ * @this Attache
+ *
+ * @param {jQuery} anchorElement
+ * @param {jQuery} popoverElement
+ */

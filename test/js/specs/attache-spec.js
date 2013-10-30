@@ -64,6 +64,17 @@ describe("Attache", function() {
   });
 
   describe("options", function() {
+    it("should trigger the afterShow callback after show()", function() {
+      var callbackFired = false,
+          callback      = function() { callbackFired = true; };
+      attache = new Attache($anchor.get(0), {}, {afterShow: callback});
+      attache.show();
+
+      expect(callbackFired).toBeTruthy();
+    });
+  });
+
+  describe("options", function() {
     it("should apply a provided CSS class to the popover", function() {
       attache = new Attache($anchor.get(0), { popoverClass: 'additional-class-test' });
       attache.show();
