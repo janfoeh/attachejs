@@ -12,7 +12,8 @@ module.exports = function(grunt) {
         dist : {
             src: ['attache.js', 'attache-jquery.js'],
             options: {
-                destination: 'doc'
+                destination: 'doc',
+                private: false
             }
         }
     }
