@@ -133,7 +133,7 @@
       if (!this.isActive()) {
         return false;
       }
-      
+
       // trigger a style recalculation in order to prevent the browser
       // from coalescing the style changes from removing 'active' and
       // adding 'inactive'. Coalescing the changes makes exit animations
@@ -372,6 +372,10 @@
      */
     setContent = function setContent(content) {
       this.content = content;
+
+      if (this.exists()) {
+        this.$popover.html(this.content);
+      }
     };
 
     /**

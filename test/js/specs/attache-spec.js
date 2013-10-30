@@ -63,7 +63,18 @@ describe("Attache", function() {
     expect($('.attache-popover').length).toEqual(0);
   });
 
-  describe("options", function() {
+  it("should update existing markup when setContent is called", function() {
+    attache = new Attache($anchor.get(0));
+    attache.setContent("foo");
+    attache.show();
+    attache.hide();
+
+    attache.setContent("bar");
+
+    expect($('.attache-popover').text()).toEqual("bar");
+  });
+
+  describe("callbacks", function() {
     it("should trigger the afterShow callback after show()", function() {
       var callbackFired = false,
           callback      = function() { callbackFired = true; };
