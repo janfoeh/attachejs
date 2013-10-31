@@ -179,7 +179,6 @@
       _setPopoverPosition.call(this, positionLabel);
 
       if (_popoverIsWithinViewport.call(this) || this.options.alternativePositions.length === 0) {
-        _setPositionLabel.call(this, positionLabel);
         return;
       }
 
@@ -190,7 +189,6 @@
 
         // cancel the loop when we found a position that fits
         if ( _popoverIsWithinViewport.call(that) ) {
-          _setPositionLabel.call(that, positionLabel);
           success = true;
           return false;
         }
@@ -297,6 +295,7 @@
       _debug.call(this, "Positioning popover to %s - x: %s y: %s", positionLabel, x, y);
 
       this.$popover.css({ top: y, left: x });
+      _setPositionLabel.call(this, positionLabel);
     };
 
     /**

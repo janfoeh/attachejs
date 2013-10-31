@@ -74,6 +74,25 @@ describe("Attache", function() {
     expect($('.attache-popover').text()).toEqual("bar");
   });
 
+  it("should add CSS classes according to its position", function() {
+    attache = new Attache($anchor.get(0), {position: "left center"});
+    attache.show();
+
+    expect(attache.popover().hasClass('horizontal-left')).toBeTruthy();
+    expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+  });
+
+  it("should update the CSS classes when switching to alternative positions", function() {
+    $anchor.css({left: '5px'});
+
+    attache = new Attache($anchor.get(0), {position: "left center", alternativePositions: ["right center"]});
+    attache.show();
+
+    expect(attache.popover().hasClass('horizontal-left')).toBeFalsy();
+    expect(attache.popover().hasClass('horizontal-right')).toBeTruthy();
+    expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+  });
+
   describe("callbacks", function() {
     it("should trigger the afterShow callback after show()", function() {
       var callbackFired = false,
