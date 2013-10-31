@@ -20,7 +20,7 @@
    * @param {Object} [options]
    * @param {String} [options.trigger=hover] - An event type to trigger Attaché. Allowed are "hover", "click" or "none"
    * @param {String} [options.position=right center] - the popover position, relative to the anchor: left|center|right top|center|bottom
-   * @param {String[]} [options.alternativePositions=center bottom] - an array list of alternative position strings, in case the default position leads
+   * @param {String[]} [options.alternativePositions=] - an array list of alternative position strings, in case the default position leads
    *                                                                  to the popover being off-screen
    * @param {Number} [options.offsetX=10] - the horizontal distance between anchor and popover in px
    * @param {Number} [options.offsetY=10] - the vertical distance between anchor and popover in px
@@ -88,7 +88,7 @@
     defaults = {
       trigger: "hover",
       position: "right center",
-      alternativePositions: ["center bottom"],
+      alternativePositions: [],
       offsetX: 10,
       offsetY: 10,
       popoverClass: "",
