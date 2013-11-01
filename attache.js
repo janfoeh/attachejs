@@ -28,6 +28,7 @@
    * @param {Boolean} [options.debug=false] - provide debug information and error handling in the console
    *
    * @param {Object} [callbacks] - callbacks to be triggered at various lifecycle moments
+   * @param {afterCreateCallback} [callbacks.afterCreate] - called after the popover markup has been created
    * @param {afterShowCallback} [callbacks.afterShow] - called each time after the popover is shown
    * 
    * @example
@@ -49,7 +50,8 @@
     this.currentPositionLabel = this.options.position;
     this.content;
     this.callbacks = {
-      'afterShow': []
+      'afterCreate':  [],
+      'afterShow':    []
     };
 
     if (typeof callbacks !== 'undefined') {
@@ -155,6 +157,7 @@
       this.$popover.html(this.content);
 
       $('body').append(this.$popover);
+      _executeCallbacksFor.call(this, 'afterCreate', this.$anchorElement, this.$popover);
     };
 
     /**
@@ -457,6 +460,16 @@
 
   return Attache;
 }));
+
+/**
+ * Callback called after the popover markup has been created
+ *
+ * @callback afterCreateCallback
+ * @this Attache
+ *
+ * @param {jQuery} anchorElement
+ * @param {jQuery} popoverElement
+ */
 
 /**
  * Callback called after a popover has been displayed

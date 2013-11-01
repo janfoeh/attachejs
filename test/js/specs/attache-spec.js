@@ -94,6 +94,18 @@ describe("Attache", function() {
   });
 
   describe("callbacks", function() {
+    it("should trigger the afterCreate callback after create, before show()", function() {
+      var popoverVisible  = true,
+          callbackFired   = false,
+          callback        = function(anchor, popover) { popoverVisible = popover.hasClass('active'); callbackFired = true; };
+
+      attache = new Attache($anchor.get(0), {}, {afterCreate: callback});
+      attache.show();
+
+      expect(callbackFired).toBeTruthy();
+      expect(popoverVisible).toBeFalsy();
+    });
+
     it("should trigger the afterShow callback after show()", function() {
       var callbackFired = false,
           callback      = function() { callbackFired = true; };
