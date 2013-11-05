@@ -1,6 +1,6 @@
 {
   "name": "attachejs",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "homepage": "https://github.com/janfoeh/attachejs",
   "authors": [
     "Jan-Christian Foeh <jan@programmanstalt.de>"
@@ -9,6 +9,7 @@
   "main": [
     "attache.js",
     "attache-jquery.js",
+    "attache-knockout.js",
     "attache.css"
   ],
   "keywords": [

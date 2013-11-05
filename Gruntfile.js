@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     jsdoc : {
         dist : {
-            src: ['attache.js', 'attache-jquery.js'],
+            src: ['attache.js', 'attache-jquery.js', 'attache-knockout.js'],
             options: {
                 destination: 'doc',
                 private: false

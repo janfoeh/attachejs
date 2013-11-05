@@ -12,7 +12,7 @@
   'use strict';
 
   /**
-   * Avatar
+   * Attache
    *
    * @class
    * @global

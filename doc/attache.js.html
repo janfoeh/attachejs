@@ -39,7 +39,7 @@
   'use strict';
 
   /**
-   * Avatar
+   * Attache
    *
    * @class
    * @global
@@ -47,7 +47,7 @@
    * @param {Object} [options]
    * @param {String} [options.trigger=hover] - An event type to trigger Attaché. Allowed are "hover", "click" or "none"
    * @param {String} [options.position=right center] - the popover position, relative to the anchor: left|center|right top|center|bottom
-   * @param {String[]} [options.alternativePositions=center bottom] - an array list of alternative position strings, in case the default position leads
+   * @param {String[]} [options.alternativePositions=] - an array list of alternative position strings, in case the default position leads
    *                                                                  to the popover being off-screen
    * @param {Number} [options.offsetX=10] - the horizontal distance between anchor and popover in px
    * @param {Number} [options.offsetY=10] - the vertical distance between anchor and popover in px
@@ -55,6 +55,7 @@
    * @param {Boolean} [options.debug=false] - provide debug information and error handling in the console
    *
    * @param {Object} [callbacks] - callbacks to be triggered at various lifecycle moments
+   * @param {afterCreateCallback} [callbacks.afterCreate] - called after the popover markup has been created
    * @param {afterShowCallback} [callbacks.afterShow] - called each time after the popover is shown
    * 
    * @example
@@ -76,7 +77,8 @@
     this.currentPositionLabel = this.options.position;
     this.content;
     this.callbacks = {
-      'afterShow': []
+      'afterCreate':  [],
+      'afterShow':    []
     };
 
     if (typeof callbacks !== 'undefined') {
@@ -115,7 +117,7 @@
     defaults = {
       trigger: "hover",
       position: "right center",
-      alternativePositions: ["center bottom"],
+      alternativePositions: [],
       offsetX: 10,
       offsetY: 10,
       popoverClass: "",
@@ -157,6 +159,10 @@
     };
 
     hide = function hide() {
+      if (!this.isActive()) {
+        return false;
+      }
+
       // trigger a style recalculation in order to prevent the browser
       // from coalescing the style changes from removing 'active' and
       // adding 'inactive'. Coalescing the changes makes exit animations
@@ -178,6 +184,7 @@
       this.$popover.html(this.content);
 
       $('body').append(this.$popover);
+      _executeCallbacksFor.call(this, 'afterCreate', this.$anchorElement, this.$popover);
     };
 
     /**
@@ -202,7 +209,6 @@
       _setPopoverPosition.call(this, positionLabel);
 
       if (_popoverIsWithinViewport.call(this) || this.options.alternativePositions.length === 0) {
-        _setPositionLabel.call(this, positionLabel);
         return;
       }
 
@@ -213,7 +219,6 @@
 
         // cancel the loop when we found a position that fits
         if ( _popoverIsWithinViewport.call(that) ) {
-          _setPositionLabel.call(that, positionLabel);
           success = true;
           return false;
         }
@@ -228,8 +233,13 @@
     };
 
     _setPositionLabel = function _setPositionLabel(newPositionLabel) {
-      this.$popover.removeClass( this.currentPositionLabel.replace(' ', '-') )
-                    .addClass( newPositionLabel.replace(' ', '-') );
+      var oldHorizontalLabel  = "horizontal-" + this.currentPositionLabel.split(' ')[0],
+          oldVerticalLabel    = "vertical-" + this.currentPositionLabel.split(' ')[1],
+          newHorizontalLabel  = "horizontal-" + newPositionLabel.split(' ')[0],
+          newVerticalLabel    = "vertical-" + newPositionLabel.split(' ')[1];
+
+      this.$popover.removeClass( oldHorizontalLabel + " " + oldVerticalLabel )
+                    .addClass( newHorizontalLabel + " " + newVerticalLabel );
 
       this.currentPositionLabel = newPositionLabel;
     };
@@ -315,6 +325,7 @@
       _debug.call(this, "Positioning popover to %s - x: %s y: %s", positionLabel, x, y);
 
       this.$popover.css({ top: y, left: x });
+      _setPositionLabel.call(this, positionLabel);
     };
 
     /**
@@ -390,6 +401,10 @@
      */
     setContent = function setContent(content) {
       this.content = content;
+
+      if (this.exists()) {
+        this.$popover.html(this.content);
+      }
     };
 
     /**
@@ -474,6 +489,16 @@
 }));
 
 /**
+ * Callback called after the popover markup has been created
+ *
+ * @callback afterCreateCallback
+ * @this Attache
+ *
+ * @param {jQuery} anchorElement
+ * @param {jQuery} popoverElement
+ */
+
+/**
  * Callback called after a popover has been displayed
  *
  * @callback afterShowCallback
@@ -491,13 +516,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Attache.html">Attache</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Attache.html">Attache</a></li></ul><h3>Global</h3><ul><li><a href="global.html#attache">attache</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Oct 29 2013 22:57:53 GMT+0100 (MEZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Nov 05 2013 15:16:32 GMT+0100 (MEZ)
 </footer>
 
 <script> prettyPrint(); </script>
