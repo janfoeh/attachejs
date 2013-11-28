@@ -1,12 +1,10 @@
 .attache-popover {
   display: block;
   position: absolute;
+  z-index: 2;
   opacity: 0;
-  transition: opacity 5s ease; }
+  transition: opacity 0.5s ease; }
   .attache-popover.inactive {
     display: none; }
   .attache-popover.active {
-    opacity: 1;
-    background-color: red;
-    height: 50px;
-    width: 100px; }
+    opacity: 1; }
