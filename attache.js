@@ -19,6 +19,7 @@
    * @param {jQuery} anchorElement - The DOM element Attaché will be anchored to
    * @param {Object} [options]
    * @param {String} [options.trigger=hover] - An event type to trigger Attaché. Allowed are "hover", "click" or "none"
+   * @param {String} [options.cssTransitionSupport=true] - see README for information
    * @param {String} [options.position=right center] - the popover position, relative to the anchor: left|center|right top|center|bottom
    * @param {String[]} [options.alternativePositions=] - an array list of alternative position strings, in case the default position leads
    *                                                                  to the popover being off-screen
@@ -94,6 +95,7 @@
       offsetX: 10,
       offsetY: 10,
       popoverClass: "",
+      cssTransitionSupport: true,
       debug: true
     };
 
@@ -114,35 +116,41 @@
      * @public
      */
     show = function show() {
+      var that = this;
+
       if ( !this.exists() ) {
         _createPopover.call(this);
       }
 
-      // trigger a style recalculation in order to prevent the browser
-      // from coalescing the style changes from removing 'inactive' and
-      // adding 'active'. Coalescing the changes makes entry animations
-      // impossible, since the popover changes display from 'none' to 'block'
-      this.$popover.removeClass('inactive');
-      this.$popover.get(0).offsetHeight;
-      this.$popover.addClass('active');
+      this.$popover.addClass('activating');
 
-      this.positionPopover();
+      // use a timeout to make sure adding and removing .activating is not
+      // coalesced into a single step
+      setTimeout(function(){
+        that.$popover.removeClass('activating').addClass('active');
 
-      _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
+        that.positionPopover();
+
+        _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
+      }.bind(this), 1);
     };
 
     hide = function hide() {
+      var that = this;
+
       if (!this.isActive()) {
         return false;
       }
 
-      // trigger a style recalculation in order to prevent the browser
-      // from coalescing the style changes from removing 'active' and
-      // adding 'inactive'. Coalescing the changes makes exit animations
-      // impossible, since the popover changes display from 'block' to 'none'
       this.$popover.removeClass('active');
-      this.$popover.get(0).offsetHeight;
-      this.$popover.addClass('inactive');
+
+      if (this.options.cssTransitionSupport) {
+        this.$popover.addClass('deactivating');
+
+        this.$popover.one('transitionEnd webkitTransitionEnd', function() {
+          that.$popover.removeClass('deactivating');
+        });
+      }
     };
 
     /**
@@ -152,7 +160,7 @@
      * @private
      */
     _createPopover = function _createPopover() {
-      this.$popover = $('<div class="attache-popover inactive"></div>').addClass(this.options.popoverClass);
+      this.$popover = $('<div class="attache-popover"></div>').addClass(this.options.popoverClass);
 
       this.$popover.html(this.content);
 
@@ -340,6 +348,10 @@
      * @returns {jQuery}
      */
     popover = function popover() {
+      if ( !this.exists() ) {
+        _createPopover.call(this);
+      }
+
       return this.$popover;
     };
 

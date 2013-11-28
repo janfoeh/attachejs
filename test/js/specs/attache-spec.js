@@ -1,4 +1,4 @@
-/*global Attache, describe, xdescribe, it, xit, beforeEach, afterEach, expect, runs, waitsFor, spyOn, spyOnEvent */
+/*global Attache, SpecHelper, describe, xdescribe, it, xit, beforeEach, afterEach, expect, runs, waitsFor, spyOn, spyOnEvent */
 
 describe("Attache", function() {
   "use strict";
@@ -28,22 +28,13 @@ describe("Attache", function() {
     expect($('.attache-popover').length).toEqual(1);
   });
 
-  it("should mark popover as active on show()", function() {
+  it("should create popover markup on when popover() is accessed before show()", function() {
+    var popover;
+
     attache = new Attache($anchor.get(0));
-    attache.show();
+    popover = attache.popover();
 
-    expect($('.attache-popover').hasClass('inactive')).toBeFalsy();
-    expect($('.attache-popover').hasClass('active')).toBeTruthy();
-  });
-
-  it("should mark popover as inactive on hide()", function() {
-    attache = new Attache($anchor.get(0));
-    attache.show();
-
-    attache.hide();
-
-    expect($('.attache-popover').hasClass('active')).toBeFalsy();
-    expect($('.attache-popover').hasClass('inactive')).toBeTruthy();
+    expect(typeof popover).toEqual("object");
   });
 
   it("should not remove popover markup on hide()", function() {
@@ -75,22 +66,146 @@ describe("Attache", function() {
   });
 
   it("should add CSS classes according to its position", function() {
-    attache = new Attache($anchor.get(0), {position: "left center"});
-    attache.show();
+    var popoverIsVisible = false;
 
-    expect(attache.popover().hasClass('horizontal-left')).toBeTruthy();
-    expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+    runs(function() {
+      attache = new Attache($anchor.get(0), {position: "left center"});
+      attache.addCallback('afterShow', function() { popoverIsVisible = true; });
+      attache.show();
+    });
+
+    waitsFor(function() {
+      return popoverIsVisible;
+    }, "The afterShow callback should have triggered", 100);
+
+    runs(function() {
+      expect(attache.popover().hasClass('horizontal-left')).toBeTruthy();
+      expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+    });
   });
 
   it("should update the CSS classes when switching to alternative positions", function() {
-    $anchor.css({left: '5px'});
+    var popoverIsVisible = false;
 
-    attache = new Attache($anchor.get(0), {position: "left center", alternativePositions: ["right center"]});
-    attache.show();
+    runs(function() {
+      $anchor.css({left: '5px'});
 
-    expect(attache.popover().hasClass('horizontal-left')).toBeFalsy();
-    expect(attache.popover().hasClass('horizontal-right')).toBeTruthy();
-    expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+      attache = new Attache($anchor.get(0), {position: "left center", alternativePositions: ["right center"]});
+      attache.addCallback('afterShow', function() { popoverIsVisible = true; });
+      attache.show();
+    });
+
+    waitsFor(function() {
+      return popoverIsVisible;
+    }, "The afterShow callback should have triggered", 100);
+
+    runs(function() {
+      expect(attache.popover().hasClass('horizontal-left')).toBeFalsy();
+      expect(attache.popover().hasClass('horizontal-right')).toBeTruthy();
+      expect(attache.popover().hasClass('vertical-center')).toBeTruthy();
+    });
+  });
+
+  // Testing whether the visibility classes .activating, .active and .deactivating are applied
+  // correctly is a little bit more involved. Both .activating and .deactivating are only applied
+  // temporarily, so we attach a DOM mutation observer to see whether that happened.
+
+  describe("visibility css classes lifecycle", function() {
+    // var globalOptionsBackup = Veil.globalOptions;
+
+    // afterEach(function() {
+    //   Veil.globalOptions = globalOptionsBackup;
+    // });
+
+    it("should add .activating and .active to the popover on show()", function() {
+      var hasActivatingClass  = false,
+          hasActiveClass      = false,
+          classChangeCounter  = 0,
+          popover,
+          observer;
+
+      runs(function() {
+        attache = new Attache($anchor.get(0));
+        popover = attache.popover();
+
+        observer = SpecHelper.onClassChange(popover, function(target){
+          classChangeCounter += 1;
+
+          if (target.hasClass('activating')) {
+            hasActivatingClass = true;
+          }
+
+          if (target.hasClass('active')) {
+            hasActiveClass = true;
+          }
+        });
+
+        attache.show();
+      });
+
+      waitsFor(function() {
+        return classChangeCounter >= 2;
+      }, "The popovers' class should have mutated twice", 100);
+
+      runs(function() {
+        observer.disconnect();
+        expect(hasActivatingClass).toBeTruthy();
+        expect(hasActiveClass).toBeTruthy();
+      });
+    });
+
+    it("should add .deactivating to the overlay on hide(), then remove all visibility classes after the transition is finished", function() {
+      var hasDeactivatingClass      = false,
+          classChangeCounter        = 0,
+          waitForTransitionComplete = false,
+          popover,
+          observer;
+
+      runs(function() {
+        attache = new Attache($anchor.get(0), {overlayClass: 'transition-test'});
+        popover = attache.popover();
+        attache.show();
+      });
+
+      waitsFor(function() {
+        return popover.hasClass('active');
+      }, "Attache should have become active", 100);
+
+      runs(function() {
+        observer = SpecHelper.onClassChange(popover, function(target){
+          classChangeCounter += 1;
+
+          if (target.hasClass('deactivating')) {
+            hasDeactivatingClass = true;
+          }
+        });
+
+        attache.hide();
+      });
+
+      waitsFor(function() {
+        return classChangeCounter >= 1;
+      }, "The popovers' class should have mutated", 100);
+
+      runs(function() {
+        observer.disconnect();
+
+        expect(hasDeactivatingClass).toBeTruthy();
+        expect($('.attache-popover.transition-test').hasClass('active')).toBeFalsy();
+
+        setTimeout(function() {
+          waitForTransitionComplete = true;
+        }, 850);
+      });
+
+      waitsFor(function() {
+        return waitForTransitionComplete;
+      }, "The wait flag should have been triggered", 1000);
+
+      runs(function() {
+        expect($('.attache-popover.transition-test').hasClass('deactivating')).toBeFalsy();
+      });
+    });
   });
 
   describe("callbacks", function() {
@@ -109,10 +224,16 @@ describe("Attache", function() {
     it("should trigger the afterShow callback after show()", function() {
       var callbackFired = false,
           callback      = function() { callbackFired = true; };
-      attache = new Attache($anchor.get(0), {}, {afterShow: callback});
-      attache.show();
 
-      expect(callbackFired).toBeTruthy();
+      runs(function() {
+        attache = new Attache($anchor.get(0));
+        attache.addCallback('afterShow', callback);
+        attache.show();
+      });
+
+      waitsFor(function() {
+        return callbackFired;
+      }, "The afterShow callback should have triggered", 100);
     });
   });
 
@@ -128,8 +249,17 @@ describe("Attache", function() {
   describe("when positioned", function() {
 
     beforeEach(function() {
-      attache = new Attache($anchor.get(0), { popoverClass: 'popover-positiontest'});
-      attache.show();
+      var popoverIsVisible = false;
+
+      runs(function() {
+        attache = new Attache($anchor.get(0), { popoverClass: 'popover-positiontest'});
+        attache.addCallback('afterShow', function() { popoverIsVisible = true; });
+        attache.show();
+      });
+
+      waitsFor(function() {
+        return attache.popover().hasClass('active');
+      }, "Attache should have become active", 100);
     });
 
     afterEach(function() {
@@ -157,45 +287,45 @@ describe("Attache", function() {
       expect(attache.popover().offset().top).toEqual(310);
     });
 
-    it("should be at position x:200 y:140 when set to 'center top'", function() {
+    it("should be at position x:225 y:140 when set to 'center top'", function() {
       attache.positionPopover('center top');
 
-      expect(attache.popover().offset().left).toEqual(200);
+      expect(attache.popover().offset().left).toEqual(225);
       expect(attache.popover().offset().top).toEqual(140);
     });
 
-    it("should be at position x:200 y:225 when set to 'center center'", function() {
+    it("should be at position x:225 y:225 when set to 'center center'", function() {
       attache.positionPopover('center center');
 
-      expect(attache.popover().offset().left).toEqual(200);
+      expect(attache.popover().offset().left).toEqual(225);
       expect(attache.popover().offset().top).toEqual(225);
     });
 
-    it("should be at position x:200 y:200 when set to 'center bottom'", function() {
+    it("should be at position x:225 y:310 when set to 'center bottom'", function() {
       attache.positionPopover('center bottom');
 
-      expect(attache.popover().offset().left).toEqual(200);
+      expect(attache.popover().offset().left).toEqual(225);
       expect(attache.popover().offset().top).toEqual(310);
     });
 
-    it("should be at position x:90 y:140 when set to 'left top'", function() {
+    it("should be at position x:140 y:140 when set to 'left top'", function() {
       attache.positionPopover('left top');
 
-      expect(attache.popover().offset().left).toEqual(90);
+      expect(attache.popover().offset().left).toEqual(140);
       expect(attache.popover().offset().top).toEqual(140);
     });
 
-    it("should be at position x:90 y:225 when set to 'left center'", function() {
+    it("should be at position x:140 y:225 when set to 'left center'", function() {
       attache.positionPopover('left center');
 
-      expect(attache.popover().offset().left).toEqual(90);
+      expect(attache.popover().offset().left).toEqual(140);
       expect(attache.popover().offset().top).toEqual(225);
     });
 
-    it("should be at position x:90 y:90 when set to 'left bottom'", function() {
+    it("should be at position x:140 y:310 when set to 'left bottom'", function() {
       attache.positionPopover('left bottom');
 
-      expect(attache.popover().offset().left).toEqual(90);
+      expect(attache.popover().offset().left).toEqual(140);
       expect(attache.popover().offset().top).toEqual(310);
     });
   });

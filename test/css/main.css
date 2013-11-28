@@ -97,14 +97,59 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+.attache-popover {
+ display: none;
+ position: absolute;
+ z-index: 2; }
+ .attache-popover.active {
+   display: block; }
 
 .popover-positiontest {
     width: 50px;
     height: 50px;
 }
 
+.transition-test {
+    display: none;
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+    opacity: 0;
+    -webkit-transform: scale(0.7);
+    -moz-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    -o-transform: scale(0.7);
+    transform: scale(0.7);
+}
 
+.transition-test.activating, .transition-test.active, .transition-test.deactivating {
+    display: block;
+}
 
+.transition-test.active {
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=1);
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+}
+
+.transition-test.deactivating {
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+    opacity: 0;
+    -webkit-transform: scale(0.7);
+    -moz-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    -o-transform: scale(0.7);
+    transform: scale(0.7);
+}
 
 
 
