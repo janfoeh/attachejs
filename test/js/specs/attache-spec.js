@@ -241,11 +241,41 @@ describe("Attache", function() {
   });
 
   describe("options", function() {
+    var $secondAnchor;
+    
+    beforeEach(function() {
+      $secondAnchor = $('<div></div>').appendTo('body');
+    });
+
+    afterEach(function() {
+      $secondAnchor.remove();
+    });
+    
     it("should apply a provided CSS class to the popover", function() {
       attache = new Attache($anchor.get(0), { popoverClass: 'additional-class-test' });
       attache.show();
 
       expect(attache.popover().hasClass('additional-class-test')).toBeTruthy();
+    });
+    
+    it("allowParallelUse: false should set a default group if none is present", function() {
+      attache = new Attache($anchor.get(0), { allowParallelUse: false });
+
+      expect(attache.options.group).toEqual('default');
+    });
+    
+    it("allowParallelUse: false hides the popover when another group member opens", function() {
+      var secondGroupMember;
+
+      attache           = new Attache($anchor.get(0), { allowParallelUse: false });
+      secondGroupMember = new Attache($secondAnchor.get(0), { allowParallelUse: false });
+
+      spyOn(attache, 'hide');
+      
+      attache.show();
+      secondGroupMember.show();
+      
+      expect(attache.hide).toHaveBeenCalled();
     });
   });
   

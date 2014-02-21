@@ -65,6 +65,15 @@
          }
       }
     }
+    
+    if (!this.options.allowParallelUse) {
+      
+      if (!this.options.group) {
+        this.options.group = 'default';
+      }
+      
+      this.addCallback('groupMemberBeforeShow', function() { this.hide(); });
+    }
 
     this.initialize();
   }
@@ -149,6 +158,7 @@
       offsetY: 10,
       popoverClass: "",
       cssTransitionSupport: true,
+      allowParallelUse: true,
       debug: true
     };
 
