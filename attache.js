@@ -52,7 +52,10 @@
     this.content;
     this.callbacks = {
       'afterCreate':  [],
-      'afterShow':    []
+      'beforeShow':   [],
+      'afterShow':    [],
+      'groupMemberBeforeShow':  [],
+      'groupMemberAfterShow':   []
     };
 
     if (typeof callbacks !== 'undefined') {
@@ -65,6 +68,55 @@
 
     this.initialize();
   }
+  
+  Attache.groups = {
+    default: []
+  };
+  
+  Attache.registerGroupMember = function registerGroupMember(instance) {
+    var groupName = instance.options.group;
+    
+    if (typeof Attache.groups[groupName] === 'undefined') {
+      Attache.groups[groupName] = [];
+    }
+    
+    if (Attache.groups[groupName].indexOf(instance) !== -1) {
+      return;
+    }
+    
+    Attache.groups[groupName].push(instance);
+  };
+  
+  Attache.unregisterGroupMember = function unregisterGroupMember(instance) {
+    var group = Attache.groups[instance.options.group],
+        index;
+    
+    if (typeof group === 'undefined') {
+      return;
+    }
+    
+    index = group.indexOf(instance);
+    
+    if (index !== -1) {
+      group.splice(index, 1);
+    }
+  };
+  
+  Attache.notifyGroupMembers = function notifyGroupMembers(trigger, instance) {
+    var group = Attache.groups[instance.options.group];
+    
+    if (!group || group.length < 2) {
+      return;
+    }
+    
+    group.forEach(function(member) {
+      if (member === instance) {
+        return;
+      }
+      
+      member.executeGroupCallbacksFor(trigger, instance);
+    });
+  };
 
   Attache.prototype = (function() {
 
@@ -79,6 +131,7 @@
         exists,
         isActive,
         addCallback,
+        executeGroupCallbacksFor,
         _hasCallbackFor,
         _executeCallbacksFor,
         _createPopover,
@@ -107,6 +160,10 @@
 
         return;
       }
+      
+      if (typeof this.options.group !== 'undefined') {
+        Attache.registerGroupMember(this);
+      }
     };
 
     /**
@@ -121,6 +178,8 @@
       if ( !this.exists() ) {
         _createPopover.call(this);
       }
+      
+      _executeCallbacksFor.call(this, 'beforeShow', this.$anchorElement, this.$popover);
 
       this.$popover.addClass('activating');
 
@@ -399,6 +458,8 @@
      * @public
      */
     destroy = function destroy() {
+      Attache.unregisterGroupMember(this);
+      
       if ( !this.exists() ) {
         return false;
       }
@@ -453,6 +514,29 @@
       if (_hasCallbackFor.call(this, trigger)) {
         this.callbacks[trigger].forEach(function(cb) { cb.apply(that, callbackArguments); });
       }
+      
+      if (typeof this.options.group !== 'undefined') {
+        Attache.notifyGroupMembers(trigger, this);
+      }
+    };
+    
+    /**
+     * Execute callbacks triggered by other group members
+     *
+     * @memberOf Attache
+     * @public
+     * @param {String} trigger
+     * @param {Attache} instance The group member that triggered the callback
+     */
+    executeGroupCallbacksFor = function executeGroupCallbacksFor(trigger, instance) {
+      var that = this;
+      
+      // "beforeShow" -> "groupMemberBeforeShow"
+      trigger = "groupMember" + trigger.charAt(0).toUpperCase() + trigger.slice(1);
+      
+      if (_hasCallbackFor.call(this, trigger)) {
+        this.callbacks[trigger].forEach(function(cb) { cb.call(that, instance); });
+      }
     };
 
     return {
@@ -466,7 +550,8 @@
       setContent: setContent,
       positionPopover: positionPopover,
       destroy: destroy,
-      addCallback: addCallback
+      addCallback: addCallback,
+      executeGroupCallbacksFor: executeGroupCallbacksFor
     };
   })();
 

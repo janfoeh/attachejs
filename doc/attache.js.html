@@ -46,6 +46,7 @@
    * @param {jQuery} anchorElement - The DOM element Attaché will be anchored to
    * @param {Object} [options]
    * @param {String} [options.trigger=hover] - An event type to trigger Attaché. Allowed are "hover", "click" or "none"
+   * @param {String} [options.cssTransitionSupport=true] - see README for information
    * @param {String} [options.position=right center] - the popover position, relative to the anchor: left|center|right top|center|bottom
    * @param {String[]} [options.alternativePositions=] - an array list of alternative position strings, in case the default position leads
    *                                                                  to the popover being off-screen
@@ -78,7 +79,10 @@
     this.content;
     this.callbacks = {
       'afterCreate':  [],
-      'afterShow':    []
+      'beforeShow':   [],
+      'afterShow':    [],
+      'groupMemberBeforeShow':  [],
+      'groupMemberAfterShow':   []
     };
 
     if (typeof callbacks !== 'undefined') {
@@ -91,6 +95,55 @@
 
     this.initialize();
   }
+  
+  Attache.groups = {
+    default: []
+  };
+  
+  Attache.registerGroupMember = function registerGroupMember(instance) {
+    var groupName = instance.options.group;
+    
+    if (typeof Attache.groups[groupName] === 'undefined') {
+      Attache.groups[groupName] = [];
+    }
+    
+    if (Attache.groups[groupName].indexOf(instance) !== -1) {
+      return;
+    }
+    
+    Attache.groups[groupName].push(instance);
+  };
+  
+  Attache.unregisterGroupMember = function unregisterGroupMember(instance) {
+    var group = Attache.groups[instance.options.group],
+        index;
+    
+    if (typeof group === 'undefined') {
+      return;
+    }
+    
+    index = group.indexOf(instance);
+    
+    if (index !== -1) {
+      group.splice(index, 1);
+    }
+  };
+  
+  Attache.notifyGroupMembers = function notifyGroupMembers(trigger, instance) {
+    var group = Attache.groups[instance.options.group];
+    
+    if (!group || group.length &lt; 2) {
+      return;
+    }
+    
+    group.forEach(function(member) {
+      if (member === instance) {
+        return;
+      }
+      
+      member.executeGroupCallbacksFor(trigger, instance);
+    });
+  };
 
   Attache.prototype = (function() {
 
@@ -105,6 +158,7 @@
         exists,
         isActive,
         addCallback,
+        executeGroupCallbacksFor,
         _hasCallbackFor,
         _executeCallbacksFor,
         _createPopover,
@@ -121,6 +175,7 @@
       offsetX: 10,
       offsetY: 10,
       popoverClass: "",
+      cssTransitionSupport: true,
       debug: true
     };
 
@@ -132,6 +187,10 @@
 
         return;
       }
+      
+      if (typeof this.options.group !== 'undefined') {
+        Attache.registerGroupMember(this);
+      }
     };
 
     /**
@@ -141,35 +200,43 @@
      * @public
      */
     show = function show() {
+      var that = this;
+
       if ( !this.exists() ) {
         _createPopover.call(this);
       }
+      
+      _executeCallbacksFor.call(this, 'beforeShow', this.$anchorElement, this.$popover);
 
-      // trigger a style recalculation in order to prevent the browser
-      // from coalescing the style changes from removing 'inactive' and
-      // adding 'active'. Coalescing the changes makes entry animations
-      // impossible, since the popover changes display from 'none' to 'block'
-      this.$popover.removeClass('inactive');
-      this.$popover.get(0).offsetHeight;
-      this.$popover.addClass('active');
+      this.$popover.addClass('activating');
 
-      this.positionPopover();
+      // use a timeout to make sure adding and removing .activating is not
+      // coalesced into a single step
+      setTimeout(function(){
+        that.$popover.removeClass('activating').addClass('active');
 
-      _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
+        that.positionPopover();
+
+        _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
+      }.bind(this), 1);
     };
 
     hide = function hide() {
+      var that = this;
+
       if (!this.isActive()) {
         return false;
       }
 
-      // trigger a style recalculation in order to prevent the browser
-      // from coalescing the style changes from removing 'active' and
-      // adding 'inactive'. Coalescing the changes makes exit animations
-      // impossible, since the popover changes display from 'block' to 'none'
       this.$popover.removeClass('active');
-      this.$popover.get(0).offsetHeight;
-      this.$popover.addClass('inactive');
+
+      if (this.options.cssTransitionSupport) {
+        this.$popover.addClass('deactivating');
+
+        this.$popover.one('transitionEnd webkitTransitionEnd', function() {
+          that.$popover.removeClass('deactivating');
+        });
+      }
     };
 
     /**
@@ -179,7 +246,7 @@
      * @private
      */
     _createPopover = function _createPopover() {
-      this.$popover = $('&lt;div class="attache-popover inactive">&lt;/div>').addClass(this.options.popoverClass);
+      this.$popover = $('&lt;div class="attache-popover">&lt;/div>').addClass(this.options.popoverClass);
 
       this.$popover.html(this.content);
 
@@ -367,6 +434,10 @@
      * @returns {jQuery}
      */
     popover = function popover() {
+      if ( !this.exists() ) {
+        _createPopover.call(this);
+      }
+
       return this.$popover;
     };
 
@@ -414,6 +485,8 @@
      * @public
      */
     destroy = function destroy() {
+      Attache.unregisterGroupMember(this);
+      
       if ( !this.exists() ) {
         return false;
       }
@@ -468,6 +541,29 @@
       if (_hasCallbackFor.call(this, trigger)) {
         this.callbacks[trigger].forEach(function(cb) { cb.apply(that, callbackArguments); });
       }
+      
+      if (typeof this.options.group !== 'undefined') {
+        Attache.notifyGroupMembers(trigger, this);
+      }
+    };
+    
+    /**
+     * Execute callbacks triggered by other group members
+     *
+     * @memberOf Attache
+     * @public
+     * @param {String} trigger
+     * @param {Attache} instance The group member that triggered the callback
+     */
+    executeGroupCallbacksFor = function executeGroupCallbacksFor(trigger, instance) {
+      var that = this;
+      
+      // "beforeShow" -> "groupMemberBeforeShow"
+      trigger = "groupMember" + trigger.charAt(0).toUpperCase() + trigger.slice(1);
+      
+      if (_hasCallbackFor.call(this, trigger)) {
+        this.callbacks[trigger].forEach(function(cb) { cb.call(that, instance); });
+      }
     };
 
     return {
@@ -481,7 +577,8 @@
       setContent: setContent,
       positionPopover: positionPopover,
       destroy: destroy,
-      addCallback: addCallback
+      addCallback: addCallback,
+      executeGroupCallbacksFor: executeGroupCallbacksFor
     };
   })();
 
@@ -522,7 +619,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Nov 05 2013 15:16:32 GMT+0100 (MEZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Fri Feb 21 2014 17:30:37 GMT+0100 (MEZ)
 </footer>
 
 <script> prettyPrint(); </script>

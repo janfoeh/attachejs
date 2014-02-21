@@ -13,6 +13,9 @@ describe("Attache", function() {
   afterEach(function() {
     $anchor.remove();
     attache.destroy();
+    Attache.groups = {
+      default: []
+    };
   });
 
   it("should be lazy and not create markup on initialization", function() {
@@ -243,6 +246,91 @@ describe("Attache", function() {
       attache.show();
 
       expect(attache.popover().hasClass('additional-class-test')).toBeTruthy();
+    });
+  });
+  
+  describe("groups", function() {
+    var $secondAnchor;
+    
+    beforeEach(function() {
+      $secondAnchor = $('<div></div>').appendTo('body');
+    });
+
+    afterEach(function() {
+      $secondAnchor.remove();
+    });
+    
+    it("should not register itself by default", function() {
+      spyOn(Attache, 'registerGroupMember');
+      
+      attache = new Attache($anchor.get(0));
+      
+      expect(Attache.registerGroupMember).wasNotCalled();
+    });
+    
+    it("should not emit group events when not part of a group", function() {
+      spyOn(Attache, 'notifyGroupMembers');
+      
+      attache = new Attache($anchor.get(0));
+      attache.show();
+      
+      expect(Attache.notifyGroupMembers).wasNotCalled();
+    });
+    
+    it("should register its group affiliation when the 'group' option is set", function() {
+      spyOn(Attache, 'registerGroupMember').andCallThrough();
+      
+      attache = new Attache($anchor.get(0), {group: 'test'});
+      
+      expect(Attache.registerGroupMember).toHaveBeenCalledWith(attache);
+      expect(Attache.groups.test.length).toEqual(1);
+    });
+    
+    it("should remove itself from its group when destroyed", function() {
+      spyOn(Attache, 'unregisterGroupMember').andCallThrough();
+      
+      attache = new Attache($anchor.get(0), {group: 'test'});
+      
+      attache.destroy();
+      
+      expect(Attache.unregisterGroupMember).toHaveBeenCalledWith(attache);
+      expect(Attache.groups.test.length).toEqual(0);
+    });
+    
+    it("should trigger group callbacks on beforeShow", function() {
+      spyOn(Attache, 'notifyGroupMembers').andCallThrough();
+      
+      attache = new Attache($anchor.get(0), {group: 'test'});
+      
+      attache.show();
+      
+      expect(Attache.notifyGroupMembers).toHaveBeenCalledWith('beforeShow', attache);
+    });
+    
+    it("group members should receive callback triggers", function() {
+      var secondGroupMember;
+
+      attache           = new Attache($anchor.get(0), {group: 'test'});
+      secondGroupMember = new Attache($secondAnchor.get(0), {group: 'test'});
+
+      spyOn(secondGroupMember, 'executeGroupCallbacksFor');
+      
+      attache.show();
+      
+      expect(secondGroupMember.executeGroupCallbacksFor).toHaveBeenCalledWith('beforeShow', attache);
+    });
+    
+    it("instances should not receive callback triggers for events they triggered themselves", function() {
+      var secondGroupMember;
+
+      attache           = new Attache($anchor.get(0), {group: 'test'});
+      secondGroupMember = new Attache($secondAnchor.get(0), {group: 'test'});
+
+      spyOn(attache, 'executeGroupCallbacksFor');
+      
+      attache.show();
+      
+      expect(attache.executeGroupCallbacksFor).wasNotCalled();
     });
   });
 
