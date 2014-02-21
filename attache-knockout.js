@@ -20,13 +20,13 @@
     /** @lends ko.bindingHandlers.attache */
     init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       var $element        = $(element),
-          user            = ko.unwrap(valueAccessor()),
+          context         = ko.unwrap(valueAccessor()),
           attacheTemplate = allBindingsAccessor().attacheTemplate,
           attacheOptions  = allBindingsAccessor().attacheOptions || {},
           contentCallback;
 
       contentCallback = function(anchor, popover) {
-        ko.renderTemplate(attacheTemplate, bindingContext, {}, popover.get(0));
+        ko.renderTemplate(attacheTemplate, context, {}, popover.get(0));
       };
 
       $element.attache(attacheOptions);
