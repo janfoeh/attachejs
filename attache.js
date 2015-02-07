@@ -144,6 +144,7 @@
         _hasCallbackFor,
         _executeCallbacksFor,
         _createPopover,
+        _removePopover,
         _getAnchorPosition,
         _setPopoverPosition,
         _setPositionLabel,
@@ -256,6 +257,23 @@
 
       $('body').append(this.$popover);
       _executeCallbacksFor.call(this, 'afterCreate', this.$anchorElement, this.$popover);
+    };
+    
+    /**
+     * Remove the popover markup from the DOM
+     *
+     * @memberOf Attache
+     * @private
+     */
+    _removePopover = function _removePopover() {
+      if ( !this.exists() ) {
+        return;
+      }
+      
+      this.$popover.remove();
+      this.$popover = null;
+      
+      // _executeCallbacksFor.call(this, 'afterCreate', this.$anchorElement, this.$popover);
     };
 
     /**
@@ -453,7 +471,7 @@
      * @returns {Boolean}
      */
     exists = function exists() {
-      return typeof this.$popover !== 'undefined' && this.$popover.length === 1;
+      return typeof this.$popover !== 'undefined' && this.$popover !== null && this.$popover.length === 1;
     };
 
     /**
@@ -495,7 +513,7 @@
         return false;
       }
 
-      this.$popover.remove();
+      _removePopover.call(this);
     };
 
     /**
