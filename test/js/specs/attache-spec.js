@@ -71,7 +71,7 @@ describe("Attache", function() {
   it("should add CSS classes according to its position", function(done) {
     var popoverIsVisible = false;
 
-    attache = new Attache($anchor.get(0), {position: "left center"});
+    attache = new Attache($anchor.get(0), {position: "left center", popoverClass: 'transition-test'});
     
     attache.addCallback('afterShow', function() {
       expect(attache.popover().hasClass('horizontal-left')).toBeTruthy();
@@ -88,7 +88,7 @@ describe("Attache", function() {
 
     $anchor.css({left: '5px'});
 
-    attache = new Attache($anchor.get(0), {position: "left center", alternativePositions: ["right center"]});
+    attache = new Attache($anchor.get(0), {position: "left center", alternativePositions: ["right center"], popoverClass: 'transition-test'});
     
     attache.addCallback('afterShow', function() {
       expect(attache.popover().hasClass('horizontal-left')).toBeFalsy();
@@ -144,7 +144,7 @@ describe("Attache", function() {
           popover,
           observer;
 
-      attache = new Attache($anchor.get(0), {overlayClass: 'transition-test'});
+      attache = new Attache($anchor.get(0), {popoverClass: 'transition-test'});
       popover = attache.popover();
       
       observer = SpecHelper.onClassChange(popover, function(target){
@@ -178,7 +178,7 @@ describe("Attache", function() {
           popover,
           observer;
 
-      attache = new Attache($anchor.get(0), {overlayClass: 'transition-test'});
+      attache = new Attache($anchor.get(0), {popoverClass: 'transition-test'});
       popover = attache.popover();
       
       setTimeout(function() {
@@ -196,7 +196,7 @@ describe("Attache", function() {
           callbackFired   = false,
           callback        = function(anchor, popover) { popoverVisible = popover.hasClass('active'); callbackFired = true; };
 
-      attache = new Attache($anchor.get(0), {}, {afterCreate: callback});
+      attache = new Attache($anchor.get(0), {popoverClass: 'transition-test'}, {afterCreate: callback});
       attache.show();
 
       expect(callbackFired).toBeTruthy();
@@ -204,7 +204,7 @@ describe("Attache", function() {
     });
 
     it("should trigger the afterShow callback after show()", function(done) {
-      attache = new Attache($anchor.get(0));
+      attache = new Attache($anchor.get(0), {popoverClass: 'transition-test'});
       
       attache.addCallback('afterShow', function() {
         done();
@@ -375,7 +375,7 @@ describe("Attache", function() {
   describe("when positioned", function() {
 
     beforeEach(function(done) {
-      attache = new Attache($anchor.get(0), { popoverClass: 'popover-positiontest'});
+      attache = new Attache($anchor.get(0), { popoverClass: 'popover-positiontest', cssTransitionSupport: false });
       
       attache.addCallback('afterShow', function() {
         done();
