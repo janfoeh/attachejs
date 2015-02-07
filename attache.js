@@ -305,6 +305,10 @@
           success = false,
           position;
 
+      if ( !this.exists() ) {
+        return false;
+      }
+
       if (typeof positionLabel === 'undefined') {
         positionLabel = this.currentPositionLabel;
       }
