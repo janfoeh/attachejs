@@ -162,6 +162,7 @@
       popoverClass: "",
       cssTransitionSupport: true,
       allowParallelUse: true,
+      disposable: false,
       debug: true
     };
 
@@ -235,6 +236,11 @@
 
         this.$popover.one('transitionEnd webkitTransitionEnd', function() {
           that.$popover.removeClass('deactivating');
+
+          if (that.options.disposable) {
+            _removePopover.call(that);
+          }
+          
           _executeCallbacksFor.call(that, 'afterHide', that.$anchorElement, that.$popover);
         });
         
@@ -243,6 +249,10 @@
       } else {
         
         this.$popover.removeClass('active');
+        
+        if (this.options.disposable) {
+          _removePopover.call(this);
+        }
         
         _executeCallbacksFor.call(this, 'afterHide', this.$anchorElement, this.$popover);
       }

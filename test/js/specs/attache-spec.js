@@ -267,6 +267,24 @@ describe("Attache", function() {
       
       expect(attache.hide).toHaveBeenCalled();
     });
+    
+    it("should remove the popover markup after hide with disposable: true", function(done) {
+      $('.attache-popover').remove();
+      
+      attache = new Attache($anchor.get(0), { popoverClass: 'transition-test', disposable: true });
+      
+      attache.addCallback('afterShow', function() {
+        attache.hide();
+      });
+      
+      attache.addCallback('afterHide', function() {
+        expect(attache.$popover).toBe(null);
+        expect($('.attache-popover').length).toBe(0);
+        done();
+      });
+      
+      attache.show();
+    });
   });
   
   describe("groups", function() {
