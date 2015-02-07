@@ -196,11 +196,28 @@
       // use a timeout to make sure adding and removing .activating is not
       // coalesced into a single step
       setTimeout(function(){
-        that.$popover.removeClass('activating').addClass('active');
+        
+        // worst case scenario: our popover has already been removed again
+        if ( !this.exists() ) {
+          return false;
+        }
+        
+        if (that.options.cssTransitionSupport) {
+          
+          that.positionPopover();
+          
+          this.$popover.one('transitionEnd webkitTransitionEnd', function() {
+            _executeCallbacksFor.call(that, 'afterShow', that.$anchorElement, that.$popover);
+          });
+          
+          this.$popover.removeClass('activating').addClass('active');
+          
+        } else {
+          that.$popover.removeClass('activating').addClass('active');
+          that.positionPopover();
+          _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
+        }
 
-        that.positionPopover();
-
-        _executeCallbacksFor.call(this, 'afterShow', this.$anchorElement, this.$popover);
       }.bind(this), 1);
     };
 
