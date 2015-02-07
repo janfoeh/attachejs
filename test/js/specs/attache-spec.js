@@ -212,6 +212,22 @@ describe("Attache", function() {
       
       attache.show();
     });
+    
+    it("should trigger the afterHide callback after hide()", function(done) {
+      attache = new Attache($anchor.get(0), {popoverClass: 'transition-test'});
+      
+      attache.addCallback('afterShow', function() {
+        console.log('aftershow: hiding');
+        attache.hide();
+      });
+      
+      attache.show();
+      
+      attache.addCallback('afterHide', function() {
+        console.log('afterHide: done');
+        done();
+      });
+    });
   });
 
   describe("options", function() {

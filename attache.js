@@ -54,8 +54,10 @@
       'afterCreate':  [],
       'beforeShow':   [],
       'afterShow':    [],
+      'afterHide':    [],
       'groupMemberBeforeShow':  [],
-      'groupMemberAfterShow':   []
+      'groupMemberAfterShow':   [],
+      'groupMemberAfterHide':   []
     };
 
     if (typeof callbacks !== 'undefined') {
@@ -233,6 +235,7 @@
 
         this.$popover.one('transitionEnd webkitTransitionEnd', function() {
           that.$popover.removeClass('deactivating');
+          _executeCallbacksFor.call(that, 'afterHide', that.$anchorElement, that.$popover);
         });
         
         this.$popover.removeClass('active').addClass('deactivating');
@@ -241,6 +244,7 @@
         
         this.$popover.removeClass('active');
         
+        _executeCallbacksFor.call(this, 'afterHide', this.$anchorElement, this.$popover);
       }
     };
 
