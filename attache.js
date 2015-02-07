@@ -228,14 +228,18 @@
         return false;
       }
 
-      this.$popover.removeClass('active');
-
       if (this.options.cssTransitionSupport) {
-        this.$popover.addClass('deactivating');
 
         this.$popover.one('transitionEnd webkitTransitionEnd', function() {
           that.$popover.removeClass('deactivating');
         });
+        
+        this.$popover.removeClass('active').addClass('deactivating');
+        
+      } else {
+        
+        this.$popover.removeClass('active');
+        
       }
     };
 
