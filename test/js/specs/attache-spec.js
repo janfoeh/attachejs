@@ -30,6 +30,13 @@ describe("Attache", function() {
 
     expect($('.attache-popover').length).toEqual(1);
   });
+  
+  it("should append the popover markup before </body> by default", function() {
+    attache = new Attache($anchor.get(0));
+    attache.show();
+
+    expect( $('body > :last-child').is('.attache-popover') ).toBeTruthy();
+  });
 
   it("should create popover markup on when popover() is accessed before show()", function() {
     var popover;
@@ -246,6 +253,22 @@ describe("Attache", function() {
       attache.show();
 
       expect(attache.popover().hasClass('additional-class-test')).toBeTruthy();
+    });
+    
+    it("appendTo: 'afterElement' should append the popover markup after the anchor", function() {
+      attache = new Attache($anchor.get(0), { appendTo: 'afterElement' });
+      attache.show();
+
+      expect( $anchor.next().is('.attache-popover') ).toBeTruthy();
+    });
+    
+    it("appendTo: function should be called with the markup", function() {
+      var result = null;
+      
+      attache = new Attache($anchor.get(0), { appendTo: function callback(markup) { result = markup; } });
+      attache.show();
+
+      expect(result).not.toBe(null);
     });
     
     it("allowParallelUse: false should set a default group if none is present", function() {

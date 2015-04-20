@@ -26,6 +26,8 @@
    * @param {Number} [options.offsetX=10] - the horizontal distance between anchor and popover in px
    * @param {Number} [options.offsetY=10] - the vertical distance between anchor and popover in px
    * @param {String} [options.popoverClass] - additional CSS class(es) to apply to the popover markup
+   * @param {String,Function} [options.appendTo] - where to insert the popover markup - either 'body', 'afterElement', or a callback that
+   *                                                takes the markup as a parameter and inserts it
    * @param {Boolean} [options.debug=false] - provide debug information and error handling in the console
    *
    * @param {Object} [callbacks] - callbacks to be triggered at various lifecycle moments
@@ -160,6 +162,7 @@
       offsetX: 10,
       offsetY: 10,
       popoverClass: "",
+      appendTo: 'body',
       cssTransitionSupport: true,
       allowParallelUse: true,
       disposable: false,
@@ -269,7 +272,16 @@
 
       this.$popover.html(this.content);
 
-      $('body').append(this.$popover);
+      if (this.options.appendTo === 'body') {
+        $('body').append(this.$popover);
+        
+      } else if (this.options.appendTo === 'afterElement') {
+        this.$anchorElement.after(this.$popover);
+        
+      } else if (typeof this.options.appendTo === 'function') {
+        this.options.appendTo(this.$popover);
+      }
+      
       _executeCallbacksFor.call(this, 'afterCreate', this.$anchorElement, this.$popover);
     };
     
