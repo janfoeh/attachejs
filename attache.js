@@ -214,6 +214,8 @@
           that.positionPopover();
           
           this.$popover.one('transitionEnd webkitTransitionEnd', function() {
+            // our dimensions might have changed during transition
+            that.positionPopover();
             _executeCallbacksFor.call(that, 'afterShow', that.$anchorElement, that.$popover);
           });
           
