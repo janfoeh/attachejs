@@ -377,9 +377,18 @@
      */
     _getAnchorPosition = function _getAnchorPosition() {
       var a       = this.$anchorElement,
-          offset  = a.offset(),
+          offset  = this.options.appendTo === 'afterElement' ? a.position() : a.offset(),
           width   = a.outerWidth(false),
           height  = a.outerHeight(false);
+
+      if (this.options.appendTo === 'afterElement') {
+        if (a.offsetParent().scrollTop() > 0) {
+          offset.top = offset.top + a.offsetParent().scrollTop();
+        }
+        if (a.offsetParent().scrollLeft() > 0) {
+          offset.left = offset.left + a.offsetParent().scrollLeft();
+        }
+      }
 
       return {
         topleft: {
