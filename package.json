@@ -1,7 +1,7 @@
 {
   "name": "Attache",
   "description": "A library for tooltips and palette UI elements",
-  "version": "0.1.9",
+  "version": "0.3.0",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-jsdoc": "~0.4.1",
